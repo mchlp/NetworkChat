@@ -2,6 +2,7 @@ package chat;
 
 import java.io.*;
 import java.net.*;
+import java.util.Enumeration;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -19,12 +20,12 @@ public class Server extends JFrame {
 	private int port = 22;
 	
 	
-	public Server(int inputPort) {
+	public Server(int inputPort) throws SocketException {
 		super("Server Messenger");
 		port = inputPort;
 		
 		try {
-			infoLabel = new JLabel("My IP Address: " + InetAddress.getLocalHost().getHostAddress() + "  |  Client IP Address: Waiting...  |  Port: " + port);
+			infoLabel = new JLabel("My IP Address: " + getIP().getHostAddress() + "  |  Client IP Address: Waiting...  |  Port: " + port);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -53,7 +54,7 @@ public class Server extends JFrame {
 	
 	public void startRunning() {
 		try {
-			server = new ServerSocket(port, 100, InetAddress.getLocalHost());
+			server = new ServerSocket(port, 100, getIP());
 			while(true) {
 				try {
 					waitForConnection();
@@ -83,7 +84,7 @@ public class Server extends JFrame {
 		input = new ObjectInputStream(connection.getInputStream());
 		showMessage("\nInput and output streams are now set up!\n");
 		try {
-			infoLabel.setText("My IP Address: " + InetAddress.getLocalHost().getHostAddress() + "  |  Client IP Address: " + connection.getInetAddress() + "  |  Port: " + port);
+			infoLabel.setText("My IP Address: " + getIP().getHostAddress() + "  |  Client IP Address: " + connection.getInetAddress().getHostAddress() + "  |  Port: " + port);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -145,6 +146,22 @@ public class Server extends JFrame {
 				}
 			}
 		);
+	}
+	
+	public static InetAddress getIP() throws SocketException, UnknownHostException {	
+		InetAddress ip = InetAddress.getByName("192.168.1.1");
+		Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+		while (e.hasMoreElements()) {
+			NetworkInterface n = (NetworkInterface) e.nextElement();
+			Enumeration<InetAddress> ee = n.getInetAddresses();
+			while (ee.hasMoreElements()) {
+				InetAddress i = (InetAddress) ee.nextElement();
+				if (i.getHostAddress().contains("192")) {
+					ip = i;
+				}
+			}
+		}
+		return ip;	
 	}
 }
 

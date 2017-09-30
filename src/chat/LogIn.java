@@ -3,7 +3,10 @@ package chat;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -44,7 +47,11 @@ public class LogIn extends JFrame{
 		clientRadioBtn.addActionListener(new ActionListener() {		
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				changeServerClient(false);
+				try {
+					changeServerClient(false);
+				} catch (SocketException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		panel.add(clientRadioBtn);
@@ -54,7 +61,11 @@ public class LogIn extends JFrame{
 		serverRadioBtn.addActionListener(new ActionListener() {		
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				changeServerClient(true);
+				try {
+					changeServerClient(true);
+				} catch (SocketException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		panel.add(serverRadioBtn);
@@ -100,12 +111,12 @@ public class LogIn extends JFrame{
 		setVisible(true);
 	}
 	
-	private void changeServerClient(final boolean tof) {
+	private void changeServerClient(final boolean tof) throws SocketException {
 		server = tof;
 		if (server) {
 			textIP.setEditable(false);
 			try {
-				textIP.setText(InetAddress.getLocalHost().getHostAddress());
+				textIP.setText(getIP().getHostAddress());
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			}
@@ -165,5 +176,21 @@ public class LogIn extends JFrame{
 			labelInfo.setForeground(Color.RED);
 			return false;
 		}
+	}
+	
+	public static InetAddress getIP() throws SocketException, UnknownHostException {	
+		InetAddress ip = InetAddress.getByName("192.168.1.1");
+		Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+		while (e.hasMoreElements()) {
+			NetworkInterface n = (NetworkInterface) e.nextElement();
+			Enumeration<InetAddress> ee = n.getInetAddresses();
+			while (ee.hasMoreElements()) {
+				InetAddress i = (InetAddress) ee.nextElement();
+				if (i.getHostAddress().contains("192")) {
+					ip = i;
+				}
+			}
+		}
+		return ip;	
 	}
 }
