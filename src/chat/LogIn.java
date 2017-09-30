@@ -1,18 +1,23 @@
 package chat;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 
-import javax.swing.*;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-public class LogIn extends JFrame{
-	
+public class LogIn extends Chat {
+
 	private JPanel btnPanel;
 	private JPanel panel;
 	private JTextField textIP;
@@ -25,26 +30,26 @@ public class LogIn extends JFrame{
 	private JRadioButton serverRadioBtn;
 	private ButtonGroup buttonGroup;
 	private boolean server = false;
-	private String[] returnArray = {null, null, null};
+	private String[] returnArray = { null, null, null };
 	private boolean validSubmit = false;
-	
+
 	public LogIn() {
-		
+
 		super("Log In");
-		
+
 		GridLayout gridLayout = new GridLayout(0, 2);
 		panel = new JPanel(gridLayout);
 		panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		add(panel, BorderLayout.CENTER);
-		
+
 		labelInfo = new JLabel("Select one of the options and enter connection information.");
 		labelInfo.setBorder(new EmptyBorder(10, 10, 0, 10));
 		add(labelInfo, BorderLayout.NORTH);
-		
+
 		clientRadioBtn = new JRadioButton("Client");
 		clientRadioBtn.setActionCommand("Client");
 		clientRadioBtn.setSelected(true);
-		clientRadioBtn.addActionListener(new ActionListener() {		
+		clientRadioBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -55,10 +60,10 @@ public class LogIn extends JFrame{
 			}
 		});
 		panel.add(clientRadioBtn);
-		
+
 		serverRadioBtn = new JRadioButton("Server");
 		serverRadioBtn.setActionCommand("Server");
-		serverRadioBtn.addActionListener(new ActionListener() {		
+		serverRadioBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -69,27 +74,27 @@ public class LogIn extends JFrame{
 			}
 		});
 		panel.add(serverRadioBtn);
-		
+
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(clientRadioBtn);
 		buttonGroup.add(serverRadioBtn);
-		
+
 		labelIP = new JLabel("IP Address of the Server: ");
 		panel.add(labelIP);
-		
+
 		textIP = new JTextField();
 		textIP.setEditable(true);
-		textIP.addActionListener(new ActionListener() {			
+		textIP.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				textPort.requestFocus();
 			}
 		});
 		panel.add(textIP);
-		
+
 		labelPort = new JLabel("Port: ");
 		panel.add(labelPort);
-		
+
 		textPort = new JTextField();
 		textPort.setEditable(true);
 		textPort.addActionListener(new ActionListener() {
@@ -99,18 +104,18 @@ public class LogIn extends JFrame{
 			}
 		});
 		panel.add(textPort);
-		
+
 		btnPanel = new JPanel();
 		add(btnPanel, BorderLayout.SOUTH);
 		button = new JButton("Log In");
 		btnPanel.add(button);
-		
+
 		pack();
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setVisible(true);
 	}
-	
+
 	private void changeServerClient(final boolean tof) throws SocketException {
 		server = tof;
 		if (server) {
@@ -125,8 +130,8 @@ public class LogIn extends JFrame{
 			textIP.setText("");
 		}
 	}
-	
-	public String[] checkForLogin() {	
+
+	public String[] checkForLogin() {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -140,21 +145,21 @@ public class LogIn extends JFrame{
 				}
 			}
 		});
-		
-		while(true) {
+
+		while (true) {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
-			//System.out.println(validSubmit);
+			// System.out.println(validSubmit);
 			if (validSubmit) {
-				//dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+				// dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 				return returnArray;
 			}
 		}
 	}
-	
+
 	private boolean validateInfo() {
 		if (textIP.getText().equals("")) {
 			labelInfo.setText("A valid IP address must be entered.");
@@ -176,21 +181,5 @@ public class LogIn extends JFrame{
 			labelInfo.setForeground(Color.RED);
 			return false;
 		}
-	}
-	
-	public static InetAddress getIP() throws SocketException, UnknownHostException {	
-		InetAddress ip = InetAddress.getByName("192.168.1.1");
-		Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
-		while (e.hasMoreElements()) {
-			NetworkInterface n = (NetworkInterface) e.nextElement();
-			Enumeration<InetAddress> ee = n.getInetAddresses();
-			while (ee.hasMoreElements()) {
-				InetAddress i = (InetAddress) ee.nextElement();
-				if (i.getHostAddress().contains("192")) {
-					ip = i;
-				}
-			}
-		}
-		return ip;	
 	}
 }
