@@ -179,38 +179,40 @@ public abstract class Chat extends JFrame {
 	}
 
 	protected void sendMessage(String message) {
-		sendTryLoop: try {
-			if (message.equals(HELP_COM)) {
-				showMessage("\nHelp Text");
-				break sendTryLoop;
-			} else if (message.startsWith(URL_COM)) {
-				message = message.replace(URL_COM, "");
-				if (!(message.startsWith("http://"))) {
-					message = "http://" + message;
-				}
-				URI link = URI.create(message);
-				try {
-					link.toURL();
-					message = "Sent a link.";
+		if (message.trim().length() > 0) {
+			sendTryLoop: try {
+				if (message.equals(HELP_COM)) {
+					showMessage("\nHelp Text");
+					break sendTryLoop;
+				} else if (message.startsWith(URL_COM)) {
+					message = message.replace(URL_COM, "");
+					if (!(message.startsWith("http://"))) {
+						message = "http://" + message;
+					}
+					URI link = URI.create(message);
+					try {
+						link.toURL();
+						message = "Sent a link.";
+						output.writeObject(name + ": " + message);
+						output.writeObject(link);
+					} catch (MalformedURLException | IllegalArgumentException e) {
+						message = "ERROR - Invalid URL";
+					}
+				} else if (message.startsWith(NAME_COM)) {
+					name = message.replace(NAME_COM, "").toUpperCase();
+					output.writeObject(new Name(name));
+					break sendTryLoop;
+				} else {
 					output.writeObject(name + ": " + message);
-					output.writeObject(link);
-				} catch (MalformedURLException | IllegalArgumentException e) {
-					message = "ERROR - Invalid URL";
 				}
-			} else if (message.startsWith(NAME_COM)) {
-				name = message.replace(NAME_COM, "").toUpperCase();
-				output.writeObject(new Name(name));
-				break sendTryLoop;
-			} else {
-				output.writeObject(name + ": " + message);
-			}
-			output.flush();
-			showMessage("\n" + name + ": " + message);
+				output.flush();
+				showMessage("\n" + name + ": " + message);
 
-		} catch (IOException e) {
-			chatWindow.append("\nError - Unable to Send Message");
-		} catch (Exception e) {
-			e.printStackTrace();
+			} catch (IOException e) {
+				chatWindow.append("\nError - Unable to Send Message");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
