@@ -238,4 +238,19 @@ public abstract class Chat extends JFrame {
 			e.printStackTrace();
 		}
 	}
+
+	protected String getAllIP() throws UnknownHostException, SocketException {
+		String allIP = "<html>";
+		Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+		while (e.hasMoreElements()) {
+			NetworkInterface n = (NetworkInterface) e.nextElement();
+			Enumeration<InetAddress> ee = n.getInetAddresses();
+			while (ee.hasMoreElements()) {
+				InetAddress i = (InetAddress) ee.nextElement();
+				allIP = allIP.concat(i.getHostAddress() + "<br>");
+			}
+		}
+		allIP = allIP.concat("</html>");
+		return allIP;
+	}
 }

@@ -33,7 +33,7 @@ public class LogIn extends Chat {
 	private String[] returnArray = { null, null, null };
 	private boolean validSubmit = false;
 
-	public LogIn() {
+	public LogIn() throws UnknownHostException, SocketException {
 
 		super("Log In");
 
@@ -90,6 +90,7 @@ public class LogIn extends Chat {
 				textPort.requestFocus();
 			}
 		});
+		textIP.setToolTipText(getAllIP());
 		panel.add(textIP);
 
 		labelPort = new JLabel("Port: ");
@@ -119,7 +120,7 @@ public class LogIn extends Chat {
 	private void changeServerClient(final boolean tof) throws SocketException {
 		server = tof;
 		if (server) {
-			textIP.setEditable(false);
+			textIP.setEditable(true);
 			try {
 				textIP.setText(getIP().getHostAddress());
 			} catch (UnknownHostException e) {
