@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.sound.sampled.AudioInputStream;
@@ -50,6 +51,8 @@ public abstract class Chat extends JFrame {
 	protected String name;
 	protected String otherName;
 	protected Socket connection;
+	protected String myIP;
+	protected String otherIP;
 	protected int port;
 	protected long lastDing;
 
@@ -58,23 +61,22 @@ public abstract class Chat extends JFrame {
 	}
 
 	public Chat(String title, String inputName, int inputPort) {
+		this(title, inputName, inputPort, getLocalIP());
+	}
+
+	public Chat(String title, String inputName, int inputPort, String ip) {
 		super(title);
 		port = inputPort;
 		name = inputName;
+		myIP = ip;
 		lastDing = 0;
 		if (name == "CLIENT") {
 			otherName = "Server";
 		} else {
 			otherName = "Client";
 		}
-		try {
-			infoLabel = new JLabel("My IP Address: " + getIP().getHostAddress() + "  |  " + otherName
-					+ " IP Address: Waiting...  |  Port: " + port);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (SocketException e1) {
-			e1.printStackTrace();
-		}
+		infoLabel = new JLabel(
+				"My IP Address: " + myIP + "  |  " + otherName + " IP Address: Waiting...  |  Port: " + port);
 		infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		add(infoLabel, BorderLayout.NORTH);
 		userText = new JTextField();
@@ -233,26 +235,41 @@ public abstract class Chat extends JFrame {
 		output.flush();
 		input = new ObjectInputStream(connection.getInputStream());
 		showMessage("\nInput and output streams are now set up!\n");
-		try {
-			infoLabel.setText("My IP Address: " + getIP().getHostAddress() + "  |  " + otherName + " IP Address: "
-					+ connection.getInetAddress().getHostAddress() + "  |  Port: " + port);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+		otherIP = connection.getInetAddress().getHostAddress();
+		infoLabel.setText(
+				"My IP Address: " + myIP + "  |  " + otherName + " IP Address: " + otherIP + "  |  Port: " + port);
 	}
 
-	protected String getAllIP() throws UnknownHostException, SocketException {
-		String allIP = "<html>";
+	protected String[] getAllIP() throws UnknownHostException, SocketException {
+		ArrayList<String> allIP = new ArrayList<>();
 		Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
 		while (e.hasMoreElements()) {
 			NetworkInterface n = (NetworkInterface) e.nextElement();
 			Enumeration<InetAddress> ee = n.getInetAddresses();
 			while (ee.hasMoreElements()) {
 				InetAddress i = (InetAddress) ee.nextElement();
-				allIP = allIP.concat(i.getHostAddress() + "<br>");
+				allIP.add(i.getHostAddress());
 			}
 		}
-		allIP = allIP.concat("</html>");
-		return allIP;
+		String[] finalAllIP = new String[allIP.size()];
+		finalAllIP = allIP.toArray(finalAllIP);
+		return finalAllIP;
+	}
+
+	protected static String getLocalIP() {
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e2) {
+			e2.printStackTrace();
+		}
+		return "IP Not Avaliable";
+	}
+
+	public void setMyIP(String myIP) {
+		this.myIP = myIP;
+	}
+
+	public void setOtherIP(String otherIP) {
+		this.otherIP = otherIP;
 	}
 }
