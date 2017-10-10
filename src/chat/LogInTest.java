@@ -42,7 +42,7 @@ public class LogInTest {
 		port = Integer.parseInt(logInArray[2]);
 
 		if (server) {
-			Server server = new Server(port);
+			Server server = new Server(ip, port);
 			server.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			server.startRunning();
 		} else {

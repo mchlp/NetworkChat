@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -20,8 +21,8 @@ public class LogIn extends Chat {
 
 	private JPanel btnPanel;
 	private JPanel panel;
-	private JTextField textIP;
 	private JTextField textPort;
+	private JComboBox<String> dropDown;
 	private JLabel labelInfo;
 	private JLabel labelIP;
 	private JLabel labelPort;
@@ -29,6 +30,8 @@ public class LogIn extends Chat {
 	private JRadioButton clientRadioBtn;
 	private JRadioButton serverRadioBtn;
 	private ButtonGroup buttonGroup;
+	private String[] allIP;
+	private int primaryIP;
 	private boolean server = false;
 	private String[] returnArray = { null, null, null };
 	private boolean validSubmit = false;
@@ -82,16 +85,17 @@ public class LogIn extends Chat {
 		labelIP = new JLabel("IP Address of the Server: ");
 		panel.add(labelIP);
 
-		textIP = new JTextField();
-		textIP.setEditable(true);
-		textIP.addActionListener(new ActionListener() {
+		allIP = getAllIP();
+		primaryIP = getPrimaryIP();
+		dropDown = new JComboBox<>(allIP);
+		changeServerClient(false);
+		dropDown.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				textPort.requestFocus();
 			}
 		});
-		textIP.setToolTipText(getAllIP());
-		panel.add(textIP);
+		panel.add(dropDown);
 
 		labelPort = new JLabel("Port: ");
 		panel.add(labelPort);
@@ -120,15 +124,13 @@ public class LogIn extends Chat {
 	private void changeServerClient(final boolean tof) throws SocketException {
 		server = tof;
 		if (server) {
-			textIP.setEditable(true);
-			try {
-				textIP.setText(getIP().getHostAddress());
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
+			dropDown.setEditable(false);
+			dropDown.setSelectedIndex(primaryIP);
+			dropDown.removeItemAt(dropDown.getItemCount() - 1);
 		} else {
-			textIP.setEditable(true);
-			textIP.setText("");
+			dropDown.setEditable(true);
+			dropDown.addItem("");
+			dropDown.setSelectedIndex(dropDown.getItemCount() - 1);
 		}
 	}
 
@@ -140,7 +142,7 @@ public class LogIn extends Chat {
 					labelInfo.setText("Please wait. Connecting...");
 					labelInfo.setForeground(Color.BLUE);
 					returnArray[0] = server ? "Server" : "Client";
-					returnArray[1] = textIP.getText();
+					returnArray[1] = (String) dropDown.getSelectedItem();
 					returnArray[2] = textPort.getText();
 					validSubmit = true;
 				}
@@ -162,7 +164,7 @@ public class LogIn extends Chat {
 	}
 
 	private boolean validateInfo() {
-		if (textIP.getText().equals("")) {
+		if (dropDown.getSelectedItem().equals("")) {
 			labelInfo.setText("A valid IP address must be entered.");
 			labelInfo.setForeground(Color.RED);
 			return false;
@@ -182,5 +184,16 @@ public class LogIn extends Chat {
 			labelInfo.setForeground(Color.RED);
 			return false;
 		}
+	}
+
+	private int getPrimaryIP() {
+		int primary = 0;
+		for (int i = 0; i < allIP.length; i++) {
+			if (allIP[i].contains("192")) {
+				primary = i;
+				break;
+			}
+		}
+		return primary;
 	}
 }

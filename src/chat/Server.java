@@ -9,8 +9,8 @@ public class Server extends Chat {
 
 	private ServerSocket server;
 
-	public Server(int inputPort) throws SocketException {
-		super("Server Messenger", "SERVER", inputPort);
+	public Server(String ip, int inputPort) throws SocketException {
+		super("Server Messenger", "SERVER", inputPort, ip);
 	}
 
 	public void startRunning() {
