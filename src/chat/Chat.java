@@ -88,8 +88,6 @@ public abstract class Chat extends JFrame {
 		});
 		userText.setBorder(new EmptyBorder(10, 10, 10, 10));
 		add(userText, BorderLayout.SOUTH);
-		chatWindow = new JTextArea();
-		chatWindow.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		chatWindow.setEditable(false);
 		chatWindow.setBorder(new EmptyBorder(10, 10, 10, 10));
 		add(new JScrollPane(chatWindow), BorderLayout.CENTER);
