@@ -41,6 +41,7 @@ public class Client extends Chat {
 
 	private void connectToServer() throws IOException {
 		showMessage("Attempting connection...\n");
+		System.out.println(serverIP + " " + port);
 		connection = new Socket(serverIP, port);
 		showMessage("Connected to: " + connection.getInetAddress().getHostName());
 	}

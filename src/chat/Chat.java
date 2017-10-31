@@ -89,9 +89,11 @@ public abstract class Chat extends JFrame {
 		});
 		userText.setBorder(new EmptyBorder(10, 10, 10, 10));
 		add(userText, BorderLayout.SOUTH);
+		chatWindow = new JTextArea();
 		chatWindow.setEditable(false);
 		chatWindow.setBorder(new EmptyBorder(10, 10, 10, 10));
 		add(new JScrollPane(chatWindow), BorderLayout.CENTER);
+		add(chatWindow, BorderLayout.CENTER);
 		setLocationRelativeTo(null);
 		setSize(600, 600);
 		setVisible(true);
@@ -248,6 +250,7 @@ public abstract class Chat extends JFrame {
 				allIP.add(i.getHostAddress());
 			}
 		}
+		allIP.add("localhost");
 		String[] finalAllIP = new String[allIP.size()];
 		finalAllIP = allIP.toArray(finalAllIP);
 		return finalAllIP;
